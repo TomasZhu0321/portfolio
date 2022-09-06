@@ -9,16 +9,16 @@ import gsap from "gsap";
 const gui = new dat.GUI();
 const world = {
   plane: {
-    width: 19,
-    height: 19,
-    widthSegments: 22,
-    heightSegments: 22,
+    width: 500,
+    height: 500,
+    widthSegments: 130,
+    heightSegments: 130,
   },
 };
-gui.add(world.plane, "width", 1, 50).onChange(generatePlane);
-gui.add(world.plane, "height", 1, 50).onChange(generatePlane);
-gui.add(world.plane, "widthSegments", 1, 80).onChange(generatePlane);
-gui.add(world.plane, "heightSegments", 1, 80).onChange(generatePlane);
+gui.add(world.plane, "width", 1, 800).onChange(generatePlane);
+gui.add(world.plane, "height", 1, 800).onChange(generatePlane);
+gui.add(world.plane, "widthSegments", 1, 500).onChange(generatePlane);
+gui.add(world.plane, "heightSegments", 1, 500).onChange(generatePlane);
 function generatePlane() {
   planeMesh.geometry.dispose();
   planeMesh.geometry = new THREE.PlaneGeometry(
@@ -28,12 +28,23 @@ function generatePlane() {
     world.plane.heightSegments
   );
   const { array } = planeMesh.geometry.attributes.position;
-  for (let i = 0; i < array.length; i += 3) {
-    const x = array[i];
-    const y = array[i + 1];
-    const z = array[i + 2];
-    array[i + 2] = z + Math.random();
+  const randomValues = [];
+  for (let i = 0; i < array.length; i++) {
+    if (i % 3 === 0) {
+      const x = array[i];
+      const y = array[i + 1];
+      const z = array[i + 2];
+      array[i] = x + (Math.random() - 0.5) * 2;
+      array[i + 1] = y + (Math.random() - 0.5) * 2;
+      array[i + 2] = z + (Math.random() - 0.5) * 5;
+    }
+    randomValues.push(Math.random() * Math.PI * 2);
   }
+  planeMesh.geometry.attributes.position.randomValues =
+    randomValues;
+  planeMesh.geometry.attributes.position.originalPostion =
+    planeMesh.geometry.attributes.position.array;
+
   const colors = [];
   for (let i = 0; i < planeMesh.geometry.attributes.position.count; i++) {
     colors.push(0.192, 0.192, 0.192);
@@ -43,8 +54,6 @@ function generatePlane() {
     "color",
     new THREE.BufferAttribute(new Float32Array(colors), 3)
   );
-
-  
 }
 const raycaster = new THREE.Raycaster(); //when mouse move, the ray point to the plane
 const scene = new THREE.Scene(); //container
@@ -59,13 +68,13 @@ renderer.setSize(innerWidth, innerHeight);
 renderer.setPixelRatio(devicePixelRatio);
 document.body.appendChild(renderer.domElement);
 
-camera.position.z = 5;
+camera.position.z = 50;
 
 // orbit control
 new OrbitControls(camera, renderer.domElement);
 
 //default place Geomeotry
-const planeGeometry = new THREE.PlaneGeometry(19, 19, 22, 22);
+const planeGeometry = new THREE.PlaneGeometry(500, 500, 130, 130);
 const planeMaterial = new THREE.MeshPhongMaterial({
   color: 0xc0c0c0,
   side: THREE.DoubleSide,
@@ -74,31 +83,11 @@ const planeMaterial = new THREE.MeshPhongMaterial({
 });
 const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
 scene.add(planeMesh);
-const { array } = planeMesh.geometry.attributes.position;
 
-for (let i = 0; i < array.length; i += 3) {
-  const x = array[i];
-  const y = array[i + 1];
-  const z = array[i + 2];
-  array[i + 2] = z + Math.random();
-
-  // array[i] =  x + Math.random();
-  // array[i+1] =  y + Math.random();
-}
-
-const colors = [];
-  for (let i = 0; i < planeMesh.geometry.attributes.position.count; i++) {
-    colors.push(0.192, 0.192, 0.192);
-  }
-  //!!add new attribute to geomertry
-  planeMesh.geometry.setAttribute(
-    "color",
-    new THREE.BufferAttribute(new Float32Array(colors), 3)
-  );
-
+generatePlane();
 // add light
 const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(0, 0, 1);
+light.position.set(0, -1, 2);
 scene.add(light);
 
 const backlight = new THREE.DirectionalLight(0xd6eaf8, 1);
@@ -109,10 +98,23 @@ const mouse = {
   x: undefined,
   y: undefined,
 };
+
+let frame = 0;
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
   raycaster.setFromCamera(mouse, camera);
+  frame += 0.01;
+  const { array, originalPostion, randomValues } =
+    planeMesh.geometry.attributes.position;
+  for (let i = 0; i < array.length; i +=3) {
+    array[i] = originalPostion[i] + Math.cos(frame + randomValues[i]) * 0.01;
+    array[i + 1] =
+      originalPostion[i + 1] + Math.sin(frame + randomValues[i + 1]) * 0.01;
+    //  array[i+2] = originalPostion[i+2] + Math.cos(frame) * 0.003;
+  }
+  planeMesh.geometry.attributes.position.needsUpdate = true;
+
   const intersects = raycaster.intersectObject(planeMesh);
   if (intersects.length > 0) {
     const { color } = intersects[0].object.geometry.attributes;
