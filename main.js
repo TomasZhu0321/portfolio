@@ -89,17 +89,17 @@ const light = new THREE.DirectionalLight(0xffffff, 1);
 light.position.set(0, 0, 1);
 scene.add(light);
 
-const pointLight = new THREE.PointLight(0xffffff)
-pointLight.position.set(0,0,1)
-scene.add(pointLight)
-const backlight = new THREE.DirectionalLight(0x3498DB, 1);
+const pointLight = new THREE.PointLight(0xffffff);
+pointLight.position.set(0, 0, 1);
+scene.add(pointLight);
+const backlight = new THREE.DirectionalLight(0x3498db, 1);
 backlight.position.set(0, 0, -1);
 scene.add(backlight);
 
 //build stars
 const starGeometry = new THREE.BufferGeometry();
 const starMaterial = new THREE.PointsMaterial({
-  color: 0xffffff
+  color: 0xffffff,
 });
 const starVerticies = [];
 for (let i = 0; i < 10000; i++) {
@@ -112,8 +112,8 @@ starGeometry.setAttribute(
   "position",
   new THREE.Float32BufferAttribute(starVerticies, 3)
 );
-const stars = new THREE.Points(starGeometry,starMaterial)
-scene.add(stars)
+const stars = new THREE.Points(starGeometry, starMaterial);
+scene.add(stars);
 
 const mouse = {
   x: undefined,
@@ -186,7 +186,6 @@ function animate() {
     });
   }
   stars.rotation.x += 0.001;
-
 }
 animate();
 
@@ -194,4 +193,43 @@ animate();
 addEventListener("mousemove", (event) => {
   mouse.x = (event.clientX / innerWidth) * 2 - 1; //adjust X coordinates
   mouse.y = -(event.clientY / innerHeight) * 2 + 1; ////adjust Y coordinates
+});
+
+gsap.to("#thomas", {
+  opacity: 1,
+  duration: 1.5,
+  delay: 0.3,
+  y: 0,
+  ease: "expo.in",
+});
+gsap.to("#goal", {
+  opacity: 1,
+  duration: 3,
+});
+gsap.to("#date", {
+  opacity: 1,
+  duration: 1.5,
+  delay: 0.1,
+  ease: "expo.in",
+});
+gsap.to("#viewWork", {
+  opacity: 1,
+  duration: 1.5,
+  delay: 0.3,
+});
+
+document.querySelector("#viewWork").addEventListener("click", (event) => {
+  event.preventDefault();
+  gsap.to("#beginPage", {
+    opacity: 0,
+  });
+
+  // gsap.to(camera.position, { z: 60, ease: "expo.inOut", duration: 2 });
+  gsap.to(camera.position, { z: -30, ease: "expo.inOut", duration: 2 });
+  gsap.to(camera.rotation, {
+    x: -1.75,
+    ease: "power3.inOut",
+    duration: 2.5,
+  });
+  gsap.to(camera.position, { y: -1000, ease: "expo.in", duration: 1.5,delay:2.5 });
 });
