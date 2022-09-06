@@ -1,4 +1,4 @@
-import "./style.css";
+// import "./style.css";
 import javascriptLogo from "./javascript.svg";
 
 import * as THREE from "three";
@@ -34,14 +34,13 @@ function generatePlane() {
       const x = array[i];
       const y = array[i + 1];
       const z = array[i + 2];
-      array[i] = x + (Math.random() - 0.5) * 2;
-      array[i + 1] = y + (Math.random() - 0.5) * 2;
-      array[i + 2] = z + (Math.random() - 0.5) * 5;
+      array[i] = x + (Math.random() - 0.5) * 3;
+      array[i + 1] = y + (Math.random() - 0.5) * 3;
+      array[i + 2] = z + (Math.random() - 0.5) * 8;
     }
     randomValues.push(Math.random() * Math.PI * 2);
   }
-  planeMesh.geometry.attributes.position.randomValues =
-    randomValues;
+  planeMesh.geometry.attributes.position.randomValues = randomValues;
   planeMesh.geometry.attributes.position.originalPostion =
     planeMesh.geometry.attributes.position.array;
 
@@ -87,12 +86,34 @@ scene.add(planeMesh);
 generatePlane();
 // add light
 const light = new THREE.DirectionalLight(0xffffff, 1);
-light.position.set(0, -1, 2);
+light.position.set(0, 0, 1);
 scene.add(light);
 
-const backlight = new THREE.DirectionalLight(0xd6eaf8, 1);
+const pointLight = new THREE.PointLight(0xffffff)
+pointLight.position.set(0,0,1)
+scene.add(pointLight)
+const backlight = new THREE.DirectionalLight(0x3498DB, 1);
 backlight.position.set(0, 0, -1);
 scene.add(backlight);
+
+//build stars
+const starGeometry = new THREE.BufferGeometry();
+const starMaterial = new THREE.PointsMaterial({
+  color: 0xffffff
+});
+const starVerticies = [];
+for (let i = 0; i < 10000; i++) {
+  const x = (Math.random() - 0.5) * 2000;
+  const y = (Math.random() - 0.5) * 2000;
+  const z = (Math.random() - 0.5) * 2000;
+  starVerticies.push(x, y, z);
+}
+starGeometry.setAttribute(
+  "position",
+  new THREE.Float32BufferAttribute(starVerticies, 3)
+);
+const stars = new THREE.Points(starGeometry,starMaterial)
+scene.add(stars)
 
 const mouse = {
   x: undefined,
@@ -107,7 +128,7 @@ function animate() {
   frame += 0.01;
   const { array, originalPostion, randomValues } =
     planeMesh.geometry.attributes.position;
-  for (let i = 0; i < array.length; i +=3) {
+  for (let i = 0; i < array.length; i += 3) {
     array[i] = originalPostion[i] + Math.cos(frame + randomValues[i]) * 0.01;
     array[i + 1] =
       originalPostion[i + 1] + Math.sin(frame + randomValues[i + 1]) * 0.01;
@@ -164,7 +185,8 @@ function animate() {
       },
     });
   }
-  // planeMesh.rotation.x += 0.02;
+  stars.rotation.x += 0.001;
+
 }
 animate();
 

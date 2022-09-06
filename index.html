@@ -4,16 +4,50 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Thomas Website</title>
+    <title>Thomas's Website</title>
     <style>
-      body{
-        margin:0;
+      body {
+        margin: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+      .font-exo {
+        font-family: "Exo 2", sans-serif;
+      }
+      .font-space-mono {
+        font-family: "Space Mono", monospace;
       }
     </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@1,700&family=Space+Mono&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <!-- <div id="app"></div> -->
+    <div id="app">
+      <div
+        class="absolute text-white text-center"
+        style="top: 50%; transform: translate(-50%, -50%); left: 50%"
+      >
+        <h1 class="font-space-mono text-3xl tracking-wide">
+          DEMING(THOMAS) ZHU
+        </h1>
+        <p class="font-exo text-5xl uppercase mt-3">
+          A gradute student hunting for Co-op
+        </p>
+        <p class="font-exo text-2xl uppercase mt-3">
+          (jan.2023-Sep.2023)
+          <br />
+          <button
+            class="border py-2 px-4 rounded-lg text-m font-space-mono uppercase mt-5 hover:bg-white hover:text-gray-800"
+          >
+            View work
+          </button>
+        </p>
+      </div>
+    </div>
     <script type="module" src="/main.js"></script>
   </body>
-  
 </html>
